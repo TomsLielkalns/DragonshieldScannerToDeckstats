@@ -2,12 +2,13 @@ import pandas as pd
 import argparse
 
 condition_mapping = {
-    "Mint": "M",
+    "Mint": "Mint",
     "NearMint": "NM",
-    "LightlyPlayed": "LP",
-    "Played": "MP",
-    "HeavilyPlayed": "HP",
-    "Damaged": "DM"
+    "Excellent": "LP",
+    "Good": "LP",
+    "LightPlayed": "MP",
+    "Played": "HP",
+    "Poor": "DM"
 }
 
 foil_mapping = {
