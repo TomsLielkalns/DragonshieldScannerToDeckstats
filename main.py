@@ -62,9 +62,13 @@ def xor_deck(collection_data, deck_data):
 
             # add collector number to the conditions if it's available
             if collector_number:
-                conditions &= (collection_data['Card Number'] == collector_number).astype(str)
+                # api returns collector number as a string
+                conditions &= (collection_data['Card Number'] == int(collector_number))
 
+            print(f"Looking for {card_amount} of {card_name} ({is_foil})" if collector_number is None else f"Looking for {card_amount} of {card_name} ({is_foil}) with collector number {collector_number}")
             matches = collection_data.loc[conditions]
+            print(f"Found {len(matches)} matches for {card_name} ({is_foil})")
+            
             for idx in matches.index:
                 if card_amount > 0:
                     remove_amount = min(matches.at[idx, 'Quantity'], card_amount)
