@@ -62,7 +62,7 @@ def xor_deck(collection_data, deck_data):
 
             # add collector number to the conditions if it's available
             if collector_number:
-                conditions &= (collection_data['Card Number'] == collector_number)
+                conditions &= (collection_data['Card Number'] == collector_number).astype(str)
 
             matches = collection_data.loc[conditions]
             for idx in matches.index:
@@ -93,7 +93,6 @@ def remap_csv(input_csv_file_path="./input.csv", output_file_path="./output.csv"
         "collector_number": collection_data['Card Number'],
         "added": collection_data['Date Bought']
     })
-    print(remapped_data)
     remapped_data.to_csv(output_file_path, index=False)
 
 def main():
