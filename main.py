@@ -55,6 +55,7 @@ def xor_deck(collection_data, deck_data):
             card_name = card['name']
             if card_name in basic_lands:
                 continue
+            card_name = card_name.split(' // ')[0] # remove double sided cards' second name
             card_amount = card['amount']
             collector_number = card.get('collector_number', None)
             is_foil = "Foil" if card.get('isFoil') else "Normal"
