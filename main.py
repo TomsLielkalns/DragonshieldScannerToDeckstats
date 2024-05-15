@@ -48,12 +48,23 @@ def aggregate_cards(collection_data):
     # drop duplicates after summing quantities
     return collection_data.drop_duplicates(subset=aggregation_columns)
 
+def fill_empty_fields(collection_data):
+    # some cards might be missing a Printing value causing aggregate data to count quantities as NaN
+    collection_data['Set Code'] = collection_data['Set Code'].fillna('Unknown')
+    collection_data['Card Number'] = collection_data['Card Number'].fillna('Unknown')
+    collection_data['Condition'] = collection_data['Condition'].fillna('NearMint')
+    collection_data['Printing'] = collection_data['Printing'].fillna('Normal')
+    collection_data['Language'] = collection_data['Language'].fillna('English')
+    collection_data['Date Bought'] = collection_data['Date Bought'].fillna('Unknown')
+    return collection_data
+
 def xor_deck(collection_data, deck_data):
     basic_lands = {"Forest", "Mountain", "Plains", "Island", "Swamp", "Wastes"}
     for section in deck_data.get('sections', []):
         for card in section.get('cards', []):
             card_name = card['name']
             if card_name in basic_lands:
+                print(f"Skipping basic land {card_name}")
                 continue
             card_name = card_name.split(' // ')[0] # remove double sided cards' second name
             card_amount = card['amount']
@@ -64,7 +75,7 @@ def xor_deck(collection_data, deck_data):
             # add collector number to the conditions if it's available
             if collector_number:
                 # api returns collector number as a string
-                conditions &= (collection_data['Card Number'] == int(collector_number))
+                conditions &= (collection_data['Card Number'] == collector_number).astype(int)
 
             print(f"Looking for {card_amount} of {card_name} ({is_foil})" if collector_number is None else f"Looking for {card_amount} of {card_name} ({is_foil}) with collector number {collector_number}")
             matches = collection_data.loc[conditions]
@@ -83,6 +94,7 @@ def xor_deck(collection_data, deck_data):
 
 def remap_csv(input_csv_file_path="./input.csv", output_file_path="./output.csv", deck_url=None):
     collection_data = read_csv_file(input_csv_file_path)
+    collection_data = fill_empty_fields(collection_data)
     collection_data = aggregate_cards(collection_data)
     if deck_url:
         user_id, deck_id = extract_deck_info(deck_url)
