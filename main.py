@@ -127,6 +127,13 @@ def xor_deck(collection_data, deck_data, include_sb=True):
     return collection_data[collection_data["Quantity"] > 0]
 
 
+def normalize_tokens(collection_data):
+    collection_data["Card Name"] = collection_data["Card Name"].str.replace(
+        " Token", ""
+    )
+    return collection_data
+
+
 def remap_csv(
     input_csv_file_path="./input.csv",
     output_file_path="./output.csv",
@@ -136,6 +143,7 @@ def remap_csv(
     collection_data = read_csv_file(input_csv_file_path)
     collection_data = fill_empty_fields(collection_data)
     collection_data = aggregate_cards(collection_data)
+    collection_data = normalize_tokens(collection_data)
     if deck_url:
         user_id, deck_id = extract_deck_info(deck_url)
         deck_json = fetch_deck_data(user_id, deck_id)
